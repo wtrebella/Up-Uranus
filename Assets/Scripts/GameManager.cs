@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using InControl;
 
 public class GameManager : MonoBehaviour {
 	private bool isGameRunning = true;
 
+	void Awake() {
+		InControlManagerHelper.Init();
+	}
+
 	void Start () {
-	
+
 	}
 	
 	void Update () {
-		if (!isGameRunning && Input.GetMouseButtonDown(0)) Application.LoadLevel(0);
+		if (!isGameRunning && InputManager.ActiveDevice.Action1.WasPressed) Application.LoadLevel(0);
 	}
 
 	public void GameOver() {

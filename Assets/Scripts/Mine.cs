@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Mine : MonoBehaviour {
 	public bool hasBeenNearMissed {get; private set;}
+	public Vector2 explosionForce;
 
 	[HideInInspector] public MineManager mineManager;
 	
