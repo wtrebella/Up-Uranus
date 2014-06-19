@@ -2,11 +2,12 @@
 using System.Collections;
 using GifRecorder;
 
-public class Guy : MonoBehaviour {
-	public float forwardSpeed;
-	public float diveAcceleration;
-	public float maxDiveSpeed;
-	public float reboundSpeed;
+public class Astronaut : MonoBehaviour {
+	public float forwardSpeed = 7;
+	public float diveAcceleration = -500;
+	public float maxDiveSpeed = -100;
+	public float reboundSpeed = 14;
+	public GameManager gameManager;
 
 	private float timeOfLastFloorHit = 0;
 	private bool isDiving = false;
@@ -60,12 +61,31 @@ public class Guy : MonoBehaviour {
 		StopCoroutine("Dive");
 		isDiving = false;
 	}
-
+	
 	void OnTriggerEnter(Collider coll) {
-		if (Time.time - timeOfLastFloorHit < 0.05f) return;
+		if (coll.tag == "FloorTile") {
+			if (Time.time - timeOfLastFloorHit < 0.05f) return;
 
-		timeOfLastFloorHit = Time.time;
+			timeOfLastFloorHit = Time.time;
 
-		coll.GetComponent<FloorTile>().Break();
+			coll.GetComponent<FloorTile>().Break();
+		}
+
+		else if (coll.tag == "Mine") {
+			coll.GetComponent<Mine>().Explode();
+			Die();
+		}
+	}
+
+	void OnTriggerExit(Collider coll) {
+		if (coll.tag == "NearMissZone") {
+			Mine m = coll.transform.parent.GetComponent<Mine>();
+			if (!m.hasBeenNearMissed) m.NearMiss();
+		}
+	}
+
+	void Die() {
+		Destroy(gameObject);
+		gameManager.GameOver();
 	}
 }

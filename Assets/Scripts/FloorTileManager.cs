@@ -10,19 +10,16 @@ public class FloorTileManager : MonoBehaviour {
 	[HideInInspector] public float tileHeight;
 
 	private List<FloorTile> floorTiles;
-	private List<FloorTile> tempTiles;
 
 	private int maxNumTiles;
 
 	void Awake() {
 		floorTiles = new List<FloorTile>();
-		tempTiles = new List<FloorTile>();
 
 		tileWidth = floorTilePrefab.transform.localScale.x * ((BoxCollider)floorTilePrefab.collider).size.x;
 		tileHeight = floorTilePrefab.transform.localScale.y * ((BoxCollider)floorTilePrefab.collider).size.y;
 	}
 
-	// Use this for initialization
 	void Start () {
 		tk2dCameraAnchor anchorLowerRight = CameraHelper.instance.anchorLowerRight;
 
@@ -37,19 +34,11 @@ public class FloorTileManager : MonoBehaviour {
 		}
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		Vector3 camOrigin = CameraHelper.instance.anchorLowerLeft.transform.position;
 
-		tempTiles = new List<FloorTile>();
-
-		foreach (FloorTile t in floorTiles) {
-			if (t.transform.position.x < camOrigin.x - tileWidth) tempTiles.Add(t);
-		}
-
-		foreach (FloorTile t in tempTiles) PlaceTileAtEnd(t);
-
-		tempTiles.Clear();
+		FloorTile t = floorTiles[0];
+		if (t.transform.position.x < camOrigin.x - tileWidth) PlaceTileAtEnd(t);
 	}
 
 	void PlaceTileAtEnd(FloorTile t) {

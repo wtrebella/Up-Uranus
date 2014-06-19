@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class ObjectFollowX : MonoBehaviour {
-	public GameObject objectToFollow;
+	public GameObject objectThatFollows;
 
 	protected float previousX = 0;
 
@@ -11,15 +11,15 @@ public class ObjectFollowX : MonoBehaviour {
 	}
 
 	protected virtual void Start() {
-		previousX = objectToFollow.transform.position.x;
+		previousX = transform.position.x;
 	}
 
 	protected virtual void LateUpdate () {
-		Vector3 p = transform.position;
-		float x = p.x + (objectToFollow.transform.position.x - previousX);
+		Vector3 p = objectThatFollows.transform.position;
+		float x = p.x + (transform.position.x - previousX);
 
-		transform.position = new Vector3(x, p.y, p.z);
+		objectThatFollows.transform.position = new Vector3(x, p.y, p.z);
 
-		previousX = objectToFollow.transform.position.x;
+		previousX = transform.position.x;
 	}
 }
