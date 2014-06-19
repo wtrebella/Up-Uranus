@@ -3,6 +3,8 @@ using System.Collections;
 using InControl;
 
 public class GameManager : MonoBehaviour {
+	public BoxCollider floorCollider;
+
 	private bool isGameRunning = true;
 
 	void Awake() {
@@ -19,5 +21,8 @@ public class GameManager : MonoBehaviour {
 
 	public void GameOver() {
 		isGameRunning = false;
+		Vector3 p = floorCollider.transform.position;
+		p.y = 0.1f;
+		floorCollider.transform.position = p;
 	}
 }

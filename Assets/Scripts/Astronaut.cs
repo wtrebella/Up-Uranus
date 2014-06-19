@@ -25,19 +25,30 @@ public class Astronaut : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!isDiving && InputManager.ActiveDevice.Action1.WasPressed) StartCoroutine("Dive");
-	}
-
-	void FixedUpdate() {
 		if (charController.isGrounded) StopDive();
 
 		if (isAlive) {
+			if (!isDiving && InputManager.ActiveDevice.Action1.WasPressed) StartCoroutine("Dive");
+
 			UpdateVelocityX();
 			UpdateVelocityY();
 
+			Vector3 newPos = transform.position + velocity * Time.deltaTime;
+
+			RaycastHit raycastHit;
+
+			Physics.Raycast(transform.position, (newPos - transform.position).normalized, out raycastHit, (newPos - transform.position).magnitude, 1<< LayerMask.NameToLayer("Mine"));
+
+			if (raycastHit.collider != null && shouldHitMines) {
+				velocity = (raycastHit.point - transform.position) / Time.deltaTime;
+			}
+
 			charController.Move(velocity * Time.deltaTime);
 		}
-		else {
+	}
+
+	void FixedUpdate() {
+		if (!isAlive) {
 			Vector3 v = rigidbody.velocity;
 			if (v.x < 0) v.x = 0;
 			rigidbody.velocity = v;
@@ -103,8 +114,6 @@ public class Astronaut : MonoBehaviour {
 			mine.Explode();
 			Die(mine);
 		}
-
-		// change it so mine collisions are just by radius?
 	}
 
 	void OnTriggerExit(Collider coll) {
@@ -118,6 +127,7 @@ public class Astronaut : MonoBehaviour {
 		isAlive = false;
 		charController.enabled = false;
 		GetComponent<CapsuleCollider>().enabled = true;
+		GetComponent<ObjectFollow>().useFixedUpdate = true;
 		rigidbody.isKinematic = false;
 		rigidbody.useGravity = true;
 		rigidbody.velocity = Vector3.zero;
