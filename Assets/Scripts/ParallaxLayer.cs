@@ -11,6 +11,7 @@ public class ParallaxLayer : MonoBehaviour {
 	public int numSprites = 3;
 	public GameObject linkedObj;
 	public tk2dSprite sprite;
+	public bool useFixedUpdate = false;
 
 	private List<tk2dSprite> sprites;
 	private float distanceTraveled = 0;
@@ -49,44 +50,65 @@ public class ParallaxLayer : MonoBehaviour {
 	}
 	
 	void Update () {
+		if (!linkedObj.rigidbody.isKinematic) {
+			useFixedUpdate = true;
+			return;
+		}
+
+		if (!useFixedUpdate) UpdatePositions();
+	}
+
+	void FixedUpdate() {
+		if (linkedObj.rigidbody.isKinematic) {
+			useFixedUpdate = false;
+			return;
+		}
+
+		if (useFixedUpdate) UpdatePositions();
+	}
+
+	void UpdatePositions() {
 		Vector3 curPosLinkedObj = linkedObj.transform.position;
 		Vector3 p = transform.localPosition;
-		float delta = linkedObjRelativeSpeed * (curPosLinkedObj.x - prevPosLinkedObj.x);
+		float delta;
+		if (useFixedUpdate)	delta = linkedObjRelativeSpeed * linkedObj.rigidbody.velocity.x * Time.fixedDeltaTime;
+		else delta = linkedObjRelativeSpeed * (curPosLinkedObj.x - prevPosLinkedObj.x);
+
 		tk2dSprite s;
 		Vector3 sp;
-
+		
 		p.x += delta;
 		transform.localPosition = p;
-
+		
 		distanceTraveled += delta;
-
+		
 		if (distanceTraveled > adjustedSpriteWidthInWorldUnits) {
 			distanceTraveled -= adjustedSpriteWidthInWorldUnits;
-
+			
 			s = sprites[sprites.Count - 1];
 			sp = s.transform.position;
-
+			
 			sprites.Remove(s);
 			sprites.Insert(0, s);
-
+			
 			sp.x -= totalWidth;
 			sp.y = baseSpritePos.y + Random.Range(0, verticalVariation);
 			s.transform.position = sp;
 		}
 		else if (distanceTraveled < -adjustedSpriteWidthInWorldUnits) {
 			distanceTraveled += adjustedSpriteWidthInWorldUnits;
-
+			
 			s = sprites[0];
 			sp = s.transform.position;
-
+			
 			sprites.Remove(s);
 			sprites.Add(s);
-
+			
 			sp.x += totalWidth;
 			sp.y = baseSpritePos.y + Random.Range(0, verticalVariation);
 			s.transform.position = sp;
 		}
-
+		
 		prevPosLinkedObj = linkedObj.transform.position;
 	}
 }

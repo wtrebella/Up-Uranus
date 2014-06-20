@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour {
 	public void GameOver() {
 		isGameRunning = false;
 		Vector3 p = floorCollider.transform.position;
-		p.y = 0.1f;
+		p.y = 0.2f;
 		floorCollider.transform.position = p;
 	}
 }

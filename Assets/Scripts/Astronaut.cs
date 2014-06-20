@@ -30,30 +30,28 @@ public class Astronaut : MonoBehaviour {
 		if (charController.isGrounded) StopDive();
 
 		if (isAlive) {
+			MineCheck();
+
 			if (!isDiving && InputManager.ActiveDevice.Action1.WasPressed) StartCoroutine("Dive");
 
 			UpdateVelocityX();
 			UpdateVelocityY();
 
-			Vector3 newPos = transform.position + velocity * Time.deltaTime;
-
-			RaycastHit raycastHit;
-
-			Physics.Raycast(transform.position, (newPos - transform.position).normalized, out raycastHit, (newPos - transform.position).magnitude, 1<< LayerMask.NameToLayer("Mine"));
-
-			if (raycastHit.collider != null && shouldHitMines) {
-				velocity = (raycastHit.point - transform.position) / Time.deltaTime;
-			}
-
 			charController.Move(velocity * Time.deltaTime);
 		}
 	}
 
-	void FixedUpdate() {
-		if (!isAlive) {
-			Vector3 v = rigidbody.velocity;
-			if (v.x < 0) v.x = 0;
-			rigidbody.velocity = v;
+	void MineCheck() {
+		Vector3 newPos = transform.position + velocity * Time.deltaTime;
+		
+		RaycastHit raycastHit;
+		
+		Physics.Raycast(transform.position, (newPos - transform.position).normalized, out raycastHit, (newPos - transform.position).magnitude, 1 << LayerMask.NameToLayer("Mine"));
+		
+		if (raycastHit.collider != null && shouldHitMines) {
+			velocity = (raycastHit.point - transform.position) / Time.deltaTime;
+			Mine mine = raycastHit.collider.GetComponent<Mine>();
+			StartCoroutine(DieAtEndOfFrame(mine));
 		}
 	}
 
@@ -114,21 +112,19 @@ public class Astronaut : MonoBehaviour {
 
 			coll.GetComponent<FloorTile>().Break();
 		}
-
-		else if (coll.tag == "Mine") {
-			if (!shouldHitMines) return;
-			Mine mine = coll.GetComponent<Mine>();
-			mine.Explode();
-			Die(mine);
-		}
 	}
 
 	void OnTriggerExit(Collider coll) {
 		if (coll.tag == "NearMissZone") {
-			if (!isAlive) return;
-
 			Mine m = coll.transform.parent.GetComponent<Mine>();
 			if (!m.hasBeenNearMissed) m.NearMiss();
+		}
+
+		else if (coll.tag == "Mine") {
+			if (isAlive || !shouldHitMines) return;
+
+			Mine mine = coll.GetComponent<Mine>();
+			Die(mine);
 		}
 	}
 
@@ -136,7 +132,15 @@ public class Astronaut : MonoBehaviour {
 		if (coll.gameObject.tag == "Floor") AudioSource.PlayClipAtPoint(hitSound, Vector3.zero, 0.5f);
 	}
 
+	IEnumerator DieAtEndOfFrame(Mine mine) {
+		yield return new WaitForEndOfFrame();
+
+		Die(mine);
+	}
+
 	void Die(Mine mine) {
+		mine.Explode();
+
 		isAlive = false;
 		charController.enabled = false;
 		GetComponent<CapsuleCollider>().enabled = true;

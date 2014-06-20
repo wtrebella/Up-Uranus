@@ -14,7 +14,7 @@ public class ObjectFollow : MonoBehaviour {
 		if (followX) previousPos.x = transform.position.x;
 		if (followY) previousPos.y = transform.position.y;
 	}
-
+	
 	void LateUpdate() {
 		if (!useFixedUpdate) UpdatePosition();
 	}
@@ -24,21 +24,35 @@ public class ObjectFollow : MonoBehaviour {
 	}
 
 	private void UpdatePosition() {
-		foreach (GameObject o in objectsThatFollow) {
-			Vector3 p = o.transform.position;
-			
-			if (followX) {
-				float x = p.x + (transform.position.x - previousPos.x);
-				o.transform.position = new Vector3(x, p.y, p.z);
-			}
-			
-			if (followY) {
-				float y = p.y + (transform.position.y - previousPos.y);
-				o.transform.position = new Vector3(p.x, y, p.z);
+		if (useFixedUpdate) {
+			Vector3 v = rigidbody.velocity;
+			if (!followX) v.x = 0;
+			if (!followY) v.y = 0;
+
+			foreach (GameObject o in objectsThatFollow) {
+				Vector3 p = o.transform.position;
+				p += v * Time.fixedDeltaTime;
+
+				o.transform.position = p;
 			}
 		}
-		
-		previousPos.x = transform.position.x;
-		previousPos.y = transform.position.y;
+		else {
+			foreach (GameObject o in objectsThatFollow) {
+				Vector3 p = o.transform.position;
+				
+				if (followX) {
+					float x = p.x + (transform.position.x - previousPos.x);
+					o.transform.position = new Vector3(x, p.y, p.z);
+				}
+				
+				if (followY) {
+					float y = p.y + (transform.position.y - previousPos.y);
+					o.transform.position = new Vector3(p.x, y, p.z);
+				}
+			}
+			
+			previousPos.x = transform.position.x;
+			previousPos.y = transform.position.y;
+		}
 	}
 }
