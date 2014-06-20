@@ -24,6 +24,6 @@ public class FloorTile : MonoBehaviour {
 
 	public void Break() {
 		GetComponent<MeshRenderer>().enabled = false;
-		AudioSource.PlayClipAtPoint(breakSound, Vector3.zero, 0.05f);
+		AudioSource.PlayClipAtPoint(breakSound, Vector3.zero);
 	}
 }

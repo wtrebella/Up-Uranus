@@ -10,6 +10,8 @@ public class Astronaut : MonoBehaviour {
 	public float maxDiveSpeed = -100;
 	public float reboundSpeed = 14;
 	public float maxDeathTorque = 100;
+	public AudioClip jumpSound;
+	public AudioClip hitSound;
 	public GameManager gameManager;
 	
 	private float timeOfLastFloorHit = 0;
@@ -60,8 +62,13 @@ public class Astronaut : MonoBehaviour {
 	}
 
 	void UpdateVelocityY() {
-		if (charController.isGrounded) velocity.y = reboundSpeed;
+		if (charController.isGrounded) Jump();
 		else velocity.y += Physics.gravity.y * Time.deltaTime;
+	}
+
+	void Jump() {
+		AudioSource.PlayClipAtPoint(jumpSound, Vector3.zero, 0.1f);
+		velocity.y = reboundSpeed;
 	}
 
 	IEnumerator Dive() {
@@ -118,9 +125,15 @@ public class Astronaut : MonoBehaviour {
 
 	void OnTriggerExit(Collider coll) {
 		if (coll.tag == "NearMissZone") {
+			if (!isAlive) return;
+
 			Mine m = coll.transform.parent.GetComponent<Mine>();
 			if (!m.hasBeenNearMissed) m.NearMiss();
 		}
+	}
+
+	void OnCollisionEnter(Collision coll) {
+		if (coll.gameObject.tag == "Floor") AudioSource.PlayClipAtPoint(hitSound, Vector3.zero, 0.5f);
 	}
 
 	void Die(Mine mine) {
