@@ -15,13 +15,13 @@ public class FloorTileManager : MonoBehaviour {
 
 	void Awake() {
 		floorTiles = new List<FloorTile>();
-
-		tileWidth = floorTilePrefab.transform.localScale.x * ((BoxCollider)floorTilePrefab.collider).size.x;
-		tileHeight = floorTilePrefab.transform.localScale.y * ((BoxCollider)floorTilePrefab.collider).size.y;
 	}
 
 	void Start () {
 		tk2dCameraAnchor anchorLowerRight = CameraHelper.instance.anchorLowerRight;
+
+		tileWidth = floorTilePrefab.transform.localScale.x * ((BoxCollider)floorTilePrefab.collider).size.x;
+		tileHeight = floorTilePrefab.transform.localScale.y * ((BoxCollider)floorTilePrefab.collider).size.y;
 
 		float maxX = anchorLowerRight.transform.position.x - tileWidth / 2f;
 		maxNumTiles = (int)(maxX / (tileWidth + tileMargin) + 8);
