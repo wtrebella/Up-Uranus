@@ -8,7 +8,13 @@ public class Mine : MonoBehaviour {
 	public AudioClip nearMissSound;
 	
 	[HideInInspector] public MineManager mineManager;
-	
+
+	private tk2dSpriteAnimator animator;
+
+	void Awake() {
+		animator = GetComponent<tk2dSpriteAnimator>();
+	}
+
 	void Start () {
 		hasBeenNearMissed = false;
 	}
@@ -19,6 +25,7 @@ public class Mine : MonoBehaviour {
 
 	public void Setup() {
 		hasBeenNearMissed = false;
+		animator.Play("Idle");
 	}
 
 	public void Explode() {
@@ -27,6 +34,7 @@ public class Mine : MonoBehaviour {
 	}
 
 	public void NearMiss() {
+		animator.Play("Disarm");
 		AudioSource.PlayClipAtPoint(nearMissSound, Vector3.zero);
 		hasBeenNearMissed = true;
 	}
