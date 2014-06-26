@@ -19,7 +19,7 @@ public class KeyboardAndMouseProfile : UnityInputDeviceProfile
 		};
 		
 		Sensitivity = 1.0f;
-		LowerDeadZone = 0.0f;
+		LowerDeadZone = 0.9f;
 		UpperDeadZone = 1.0f;
 		
 		ButtonMappings = new[]
@@ -61,30 +61,6 @@ public class KeyboardAndMouseProfile : UnityInputDeviceProfile
 				Handle = "Move Y Alternate",
 				Target = InputControlType.LeftStickY,
 				Source = KeyCodeAxis( KeyCode.DownArrow, KeyCode.UpArrow )
-			},
-			new InputControlMapping
-			{
-				Handle = "Look X",
-				Target = InputControlType.RightStickX,
-				Source = MouseXAxis,
-				Raw    = true,
-				Scale  = 0.1f
-			},
-			new InputControlMapping
-			{
-				Handle = "Look Y",
-				Target = InputControlType.RightStickY,
-				Source = MouseYAxis,
-				Raw    = true,
-				Scale  = 0.1f
-			},
-			new InputControlMapping
-			{
-				Handle = "Look Z",
-				Target = InputControlType.ScrollWheel,
-				Source = MouseScrollWheel,
-				Raw    = true,
-				Scale  = 0.1f
 			}
 		};
 	}
