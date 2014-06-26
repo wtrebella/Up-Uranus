@@ -6,7 +6,8 @@ public class Mine : MonoBehaviour {
 	public Vector2 explosionForce;
 	public AudioClip explosionSound;
 	public AudioClip nearMissSound;
-	
+	public GameObject nearMissPrefab;
+
 	[HideInInspector] public MineManager mineManager;
 
 	private tk2dSpriteAnimator animator;
@@ -34,6 +35,9 @@ public class Mine : MonoBehaviour {
 	}
 
 	public void NearMiss() {
+		GameObject nm = NGUITools.AddChild(GameObject.Find("UI Root"), nearMissPrefab);
+		nm.transform.position = CameraHelper.instance.GetUIPosition(transform.position);
+
 		animator.Play("Disarm");
 		AudioSource.PlayClipAtPoint(nearMissSound, Vector3.zero);
 		hasBeenNearMissed = true;

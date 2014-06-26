@@ -4,6 +4,9 @@ using System.Collections;
 public class CameraHelper : MonoBehaviour {
 	public static CameraHelper instance;
 
+	public Camera gameCam;
+	public Camera uiCam;
+
 	public tk2dCamera cam;
 	public tk2dCameraAnchor anchorLowerRight;
 	public tk2dCameraAnchor anchorLowerLeft;
@@ -20,5 +23,10 @@ public class CameraHelper : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public Vector3 GetUIPosition(Vector3 worldPosition) {
+		Vector3 pos = gameCam.WorldToViewportPoint(worldPosition);
+		return uiCam.ViewportToWorldPoint(pos);
 	}
 }
